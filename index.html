@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oasis Health Care - Patient Registration</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Sticky Header Styles - Content Protection */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: #f8f4fc;
+            z-index: 1000;
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(106, 13, 173, 0.1);
+            border-bottom: 2px solid #c8a2c8;
+        }
+        
+        /* Welcome Banner Styles */
+        .welcome-banner {
+            background: linear-gradient(135deg, #6a0dad 0%, #9d5bc7 100%);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 10px auto;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(106, 13, 173, 0.3);
+        }
+        
+        .welcome-banner h2 {
+            margin: 0 0 5px 0;
+            color: white;
+            border: none;
+            padding: 0;
+            font-size: 18px;
+        }
+        
+        .welcome-banner p {
+            margin: 3px 0 8px 0;
+            font-size: 12px;
+        }
+
+
+        /* Time Event Banner */
+        .time-banner {
+            background: #fff0f3;
+            color: #d63384;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 800px;
+            border: 2px solid #FFB6C1;
+            display: none;
+        }
+        
+        .time-banner.active {
+            display: block;
+        }
+        
+        /* Fixed Footer - Content Protection */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #6a0dad;
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 -2px 5px rgba(106, 13, 173, 0.3);
+            z-index: 999;
+            text-align: center;
+        }
+        
+        footer p {
+            margin: 0;
+            color: white;
+        }
+        
+        footer button {
+            background-color: white;
+            color: #6a0dad;
+            border: 2px solid white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        
+        footer button:hover {
+            background-color: #f8f4fc;
+        }
+        
+        /* Add padding to body to prevent content being hidden under fixed footer */
+        body {
+            padding-bottom: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Header (Content Protection) -->
+    <div class="sticky-header">
+        <h1 style="margin: 0;">
+            <img src="the-symbol-of-family-healthcare-by-stethoscope.jpg" alt="Clinic Logo" width="50" height="50" style="vertical-align: middle;"> 
+            Oasis Health Care - Patient Registration
+        </h1>
+        <p style="text-align: right; margin: 10px 0 0 0; font-weight: bold;">
+            <span id="currentDateTime">Loading date and time...</span>
+        </p>
+    </div>
+    
+    <script>
+        // TIME-BASED EVENT: Dynamic date and time that updates every second
+        function updateDateTime() {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const now = new Date();
+            
+            const dayName = days[now.getDay()];
+            const monthName = months[now.getMonth()];
+            const date = now.getDate();
+            const year = now.getFullYear();
+            
+            // Format time as HH:MM:SS AM/PM
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be 12
+            const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+            
+            document.getElementById('currentDateTime').textContent = 
+                `Today is: ${dayName}, ${monthName} ${date}, ${year} - ${timeString}`;
+        }
+        
+        // Update immediately and then every second
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+    
+    <!-- Combined Welcome & Session Info Widget -->
+    <div class="welcome-banner" id="welcomeBanner">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+            <div style="flex: 1;">
+                <h2 id="welcomeTitle" style="margin: 0 0 5px 0; font-size: 18px; text-align: left;">Welcome to Oasis Health Care!</h2>
+                <p style="margin: 0; font-size: 12px; text-align: left;">Today is: <span id="currentDate"></span></p>
+            </div>
+            <div id="notYouSection" style="display: none; text-align: right;">
+                <label style="margin: 0; display: inline-flex; align-items: center; gap: 5px;">
+                    <input type="checkbox" id="notMeCheckbox" onchange="handleNotMe()">
+                    <span id="notMeLabel" style="font-size: 11px;">Not [Name]? Click here to start as a NEW USER.</span>
+                </label>
+            </div>
+        </div>
+        
+        <script>
+            // Display current date
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const now = new Date();
+            const dateString = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+            document.getElementById('currentDate').textContent = dateString;
+        </script>
+        
+        <!-- Session Information in one line -->
+        <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.15); border-radius: 6px; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="text-align: center; flex: 0 0 auto;">
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 4px;">Visit Count</div>
+                <div style="font-size: 18px; font-weight: bold; color: #ffffff;"><span id="visitCount">0</span></div>
+            </div>
+            <div style="width: 1px; height: 35px; background: rgba(255,255,255,0.3);"></div>
+            <div style="text-align: center; flex: 0 0 auto;">
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 4px;">Last Visit</div>
+                <div style="font-size: 13px; font-weight: bold; color: #ffffff;"><span id="lastVisit">First time!</span></div>
+            </div>
+            <div style="width: 1px; height: 35px; background: rgba(255,255,255,0.3);"></div>
+            <div style="text-align: center; flex: 0 0 auto;">
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 4px;">Session Started</div>
+                <div style="font-size: 13px; font-weight: bold; color: #ffffff;"><span id="sessionStart">Just now</span></div>
+            </div>
+            <div style="width: 1px; height: 35px; background: rgba(255,255,255,0.3);"></div>
+            <div style="text-align: center; flex: 0 0 auto;">
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 4px;">⏱️ Time Remaining</div>
+                <div style="font-size: 22px; font-weight: bold; color: #ffffff;"><span id="timeOnPage">10:00</span></div>
+            </div>
+        </div>
+        
+        <button onclick="clearSessionData()" style="margin-top: 10px; background: rgba(255,255,255,0.3); color: white; border: 2px solid white; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px;">Clear Session Data</button>
+    </div>
+    
+    <!-- Time-Based Event Banner -->
+    <div class="time-banner" id="timeBanner">
+        <strong>🎉 Special Hours Alert!</strong>
+        <p id="timeMessage"></p>
+    </div>
+    
+
+
+
+    <form id="patient-form" method="post" onsubmit="return false;">
+        
+        <!-- Block 1: Personal Information -->
+        <h2>Personal Information</h2>
+        
+        <table cellpadding="5" cellspacing="0">
+            <tr>
+                <td class="required">First Name:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="firstName" 
+                           name="firstName" 
+                           title="Enter your first name (1-30 characters, letters, apostrophes, and dashes only)"
+                           pattern="[A-Za-z'\-]{1,30}"
+                           minlength="1"
+                           maxlength="30"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td>Middle Initial:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="middleInitial" 
+                           name="middleInitial" 
+                           title="Enter your middle initial (optional, one letter only)"
+                           pattern="[A-Za-z]?"
+                           maxlength="1">
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Last Name:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="lastName" 
+                           name="lastName" 
+                           title="Enter your last name (1-30 characters, letters, apostrophes, dashes, and numbers 2-5 like Jr. or III)"
+                           pattern="[A-Za-z'2-5\-]{1,30}"
+                           minlength="1"
+                           maxlength="30"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Date of Birth:</td>
+                <td colspan="3">
+                    <input type="date" 
+                           id="dob" 
+                           name="dob" 
+                           title="Select your date of birth (must be between 120 years ago and today)"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Social Security:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="ssnDisplay" 
+                           style="width: 100%; font-family: monospace; letter-spacing: 1px;"
+                           placeholder="***-**-****"
+                           title="Enter your Social Security Number (numbers will be hidden, dashes visible)"
+                           required>
+                    <input type="hidden" 
+                           id="ssn" 
+                           name="ssn">
+                </td>
+            </tr>
+            <tr>
+                <td class="required">User ID:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="userId" 
+                           name="userId" 
+                           title="Create a username (5-30 characters, letters and numbers only, no spaces, must start with a letter)"
+                           pattern="[A-Za-z][A-Za-z0-9_-]{4,29}"
+                           minlength="5"
+                           maxlength="30"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Password:</td>
+                <td colspan="3">
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           title="Create a password (8-30 characters, must contain: 1 uppercase, 1 lowercase, 1 number, 1 special character !@#$%^&*()-_+=\/<>.,`~)"
+                           pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_+=\\\/<>.,`~])[A-Za-z\d!@#$%^&*()\-_+=\\\/<>.,`~]{8,30}$"
+                           minlength="8"
+                           maxlength="30"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Re-enter Password:</td>
+                <td colspan="3">
+                    <input type="password" 
+                           id="confirmPassword" 
+                           name="confirmPassword" 
+                           title="Re-enter your password to confirm (must match the password above)"
+                           minlength="8"
+                           maxlength="30"
+                           required>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Block 2: Contact & Address Information (MERGED) -->
+        <h2>Contact & Address Information</h2>
+        
+        <table cellpadding="5" cellspacing="0">
+            <tr>
+                <td class="required">Email Address:</td>
+                <td colspan="3">
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           title="Enter your email address in format: name@domain.com"
+                           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                           placeholder="name@domain.com"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Phone Number:</td>
+                <td colspan="3">
+                    <input type="tel" 
+                           id="phone" 
+                           name="phone" 
+                           title="Enter your phone number in format: 000-000-0000"
+                           pattern="\d{3}-\d{3}-\d{4}"
+                           placeholder="000-000-0000"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Address Line 1:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="address1" 
+                           name="address1" 
+                           title="Enter your street address (2-30 characters required)"
+                           minlength="2"
+                           maxlength="30"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td>Address Line 2:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="address2" 
+                           name="address2" 
+                           title="Enter apartment, suite, or unit number (optional, 2-30 characters if entered)"
+                           minlength="2"
+                           maxlength="30"
+                           pattern=".{2,30}|^$">
+                </td>
+            </tr>
+            <tr>
+                <td class="required">City:</td>
+                <td>
+                    <input type="text" 
+                           id="city" 
+                           name="city" 
+                           title="Enter your city name (2-30 characters, letters and spaces only)"
+                           pattern="[A-Za-z ]{2,30}"
+                           minlength="2"
+                           maxlength="30"
+                           required>
+                </td>
+                <td class="required">State:</td>
+                <td>
+                    <select id="state" 
+                            name="state" 
+                            title="Select your state from the dropdown list"
+                            required>
+                        <option value="">Select State</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">ZIP Code:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="zipCode" 
+                           name="zipCode" 
+                           title="Enter your ZIP code (5 digits required, optional +4 extension supported)"
+                           pattern="\d{5}(-\d{4})?"
+                           placeholder="00000 or 00000-0000"
+                           maxlength="10"
+                           required>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Block 3: Medical History & Health Details -->
+        <h2>Medical History & Health Details</h2>
+        
+        <table cellpadding="5" cellspacing="0">
+            <tr>
+                <td colspan="4">Describe Symptoms:</td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <textarea id="symptoms" 
+                              name="symptoms" 
+                              rows="4" 
+                              title="Describe your current symptoms (optional, avoid using quotation marks)"
+                              pattern='[^"]*'
+                              placeholder="Describe current symptoms here..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" class="required" style="font-weight: bold; color: #7b2cbf; padding-top: 15px;">
+                    Check all conditions you have experienced:
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <input type="checkbox" id="chickenPox" name="medicalHistory" value="ChickenPox" title="Check if you have had Chicken Pox">
+                    <label for="chickenPox">Chicken Pox</label>
+                    
+                    <input type="checkbox" id="measles" name="medicalHistory" value="Measles" title="Check if you have had Measles">
+                    <label for="measles">Measles</label>
+                    
+                    <input type="checkbox" id="covid19" name="medicalHistory" value="Covid19" title="Check if you have had Covid-19">
+                    <label for="covid19">Covid-19</label>
+                    
+                    <input type="checkbox" id="smallPox" name="medicalHistory" value="SmallPox" title="Check if you have had Small Pox">
+                    <label for="smallPox">Small Pox</label>
+                    
+                    <input type="checkbox" id="tetanus" name="medicalHistory" value="Tetanus" title="Check if you have had Tetanus">
+                    <label for="tetanus">Tetanus</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Gender:</td>
+                <td colspan="3">
+                    <input type="radio" id="genderMale" name="gender" value="Male" title="Select if you are male" required>
+                    <label for="genderMale">Male</label>
+                    
+                    <input type="radio" id="genderFemale" name="gender" value="Female" title="Select if you are female">
+                    <label for="genderFemale">Female</label>
+                    
+                    <input type="radio" id="genderOther" name="gender" value="Other" title="Select if you identify as other">
+                    <label for="genderOther">Other</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Vaccinated?</td>
+                <td colspan="3">
+                    <input type="radio" id="vaccinatedYes" name="vaccinated" value="Yes" title="Select if you are vaccinated" required>
+                    <label for="vaccinatedYes">Yes</label>
+                    
+                    <input type="radio" id="vaccinatedNo" name="vaccinated" value="No" title="Select if you are not vaccinated">
+                    <label for="vaccinatedNo">No</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Insurance?</td>
+                <td colspan="3">
+                    <input type="radio" id="insuranceYes" name="insurance" value="Yes" title="Select if you have insurance" required>
+                    <label for="insuranceYes">Yes</label>
+                    
+                    <input type="radio" id="insuranceNo" name="insurance" value="No" title="Select if you do not have insurance">
+                    <label for="insuranceNo">No</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Health Score (1 to 10):</td>
+                <td colspan="3">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="range" 
+                               id="healthScore" 
+                               name="healthScore" 
+                               min="1" 
+                               max="10" 
+                               value="5"
+                               title="Slide to rate your health from 1 (poor) to 10 (excellent)"
+                               style="flex: 1; cursor: pointer; accent-color: #6a0dad;"
+                               required>
+                        <div style="display: flex; align-items: baseline; gap: 5px; min-width: 80px;">
+                            <span id="healthScoreValue" style="font-size: 28px; font-weight: bold; color: #6a0dad;">5</span>
+                            <span style="font-size: 16px; color: #7b2cbf; font-weight: bold;">/ 10</span>
+                        </div>
+                    </div>
+                    <script>
+                        const healthScoreSlider = document.getElementById('healthScore');
+                        const healthScoreDisplay = document.getElementById('healthScoreValue');
+                        
+                        healthScoreSlider.addEventListener('input', function() {
+                            healthScoreDisplay.textContent = this.value;
+                        });
+                    </script>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+        
+        <!-- Remember Me Checkbox - ASSIGNMENT 4 REQUIREMENT -->
+        <div style="text-align: center; margin: 20px 0; padding: 15px; background-color: #f8f4fc; border: 2px solid #c8a2c8; border-radius: 8px;">
+            <input type="checkbox" id="rememberMe" name="rememberMe" checked>
+            <label for="rememberMe" style="font-weight: bold; color: #6a0dad; font-size: 16px;">
+                Remember Me (Save my information for 48 hours)
+            </label>
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                Your information will be saved for 48 hours. Uncheck this to clear all saved data when you leave.
+            </p>
+        </div>
+        
+        <center>
+            <button type="button" id="reviewBtn" onclick="reviewForm()">REVIEW</button>
+            <button type="button" id="submitBtn" onclick="submitForm()" disabled style="opacity: 0.5; cursor: not-allowed;">SUBMIT</button>
+            <button type="reset" onclick="clearReview()">START OVER</button>
+        </center>
+    </form>
+
+    <!-- Review Section (Initially Hidden) -->
+    <div id="reviewSection" style="display: none;">
+        <h2 style="text-align: center; margin-top: 30px; color: #6a0dad;">PLEASE REVIEW THIS INFORMATION</h2>
+        <div id="reviewContent" style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(106, 13, 173, 0.2); margin-top: 20px;">
+        </div>
+    </div>
+
+    <!-- Fixed Footer (Content Protection) -->
+    <footer>
+        <p>🏥 Oasis Health Care | 📧 <button onclick="location.href='mailto:contact@Oasishealthcare.com';">Contact Us</button> | 📍 801 Wells Branch Pkwy, Pflugerville, TX, 78660</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
