@@ -1,0 +1,174 @@
+ body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  line-height: 1.6;
+  background-color: #f8f4fc; /* soft lilac background */
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #6a0dad; /* deep lilac/purple */
+}
+
+h2 {
+  margin-top: 30px;
+  color: #7b2cbf; /* medium lilac shade */
+  border-bottom: 2px solid #c8a2c8; /* light lilac border */
+  padding-bottom: 5px;
+}
+
+form {
+  max-width: 800px;
+  margin: auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(106, 13, 173, 0.2);
+}
+
+label {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+input, select, textarea {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #c8a2c8; /* lilac border */
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  background-color: white;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #7b2cbf;
+}
+
+textarea {
+  width: 100%;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px 5px 0 0;
+  border: 2px solid #c8a2c8;
+  border-radius: 5px;
+  background-color: white;
+  color: #5b21b6;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+button[type="reset"] {
+  background-color: white; /* white background */
+  color: #FFB6C1; /* soft rose pink text */
+  border: 2px solid #FFB6C1; /* soft rose pink border */
+}
+
+button[type="reset"]:hover {
+  background-color: #FFF0F3; /* very light rose pink on hover */
+}
+
+#reviewBtn {
+  background-color: white; /* white background */
+  color: #87CEEB; /* soft sky blue text */
+  border: 2px solid #87CEEB; /* soft sky blue border */
+}
+
+#reviewBtn:hover {
+  background-color: #E0F4FF; /* very light sky blue on hover */
+}
+
+#submitBtn {
+  background-color: white; /* white background */
+  color: #98D8C8; /* soft mint green text */
+  border: 2px solid #98D8C8; /* soft mint green border */
+}
+
+#submitBtn:hover {
+  background-color: #E8F5F1; /* very light mint green on hover */
+}
+
+footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+  color: #6a0dad;
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+
+table td {
+  padding: 10px;
+  vertical-align: middle;
+}
+
+/* Label column - fixed width for equal alignment */
+table td:first-child {
+  color: #7b2cbf;
+  font-weight: bold;
+  width: 220px;
+  white-space: nowrap;
+  text-align: left;
+}
+
+/* Input fields - full width within their cells */
+td input[type="text"],
+td input[type="password"],
+td input[type="email"],
+td input[type="tel"],
+td input[type="date"],
+td input[type="number"],
+td select,
+td textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #c8a2c8;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Textarea specific styling */
+td textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Checkbox and Radio button alignment */
+td input[type="checkbox"],
+td input[type="radio"] {
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+td label {
+  display: inline;
+  margin-right: 20px;
+  font-weight: normal;
+  color: #333;
+}
+
+/* Required Field Asterisk */
+.required::after {
+  content: " *";
+  color: #dc2626;
+  font-weight: bold;
+}

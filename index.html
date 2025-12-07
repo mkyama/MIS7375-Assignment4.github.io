@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oasis Health Care - Patient Registration</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Fixed header styling */
+        #mainHeader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f8f4fc 0%, #e8dff5 100%);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(106, 13, 173, 0.2);
+            padding: 15px 20px;
+            border-bottom: 3px solid #c8a2c8;
+        }
+        
+        #mainHeader h1 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        #welcomeMessage {
+            font-size: 16px;
+            color: #6a0dad;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        #newUserCheckbox {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        #newUserCheckbox input {
+            margin-right: 5px;
+        }
+        
+        /* Add padding to body to account for fixed header */
+        body {
+            padding-top: 180px;
+            padding-bottom: 100px;
+        }
+        
+        /* Fixed footer styling */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #e8dff5 0%, #f8f4fc 100%);
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(106, 13, 173, 0.2);
+            padding: 15px 20px;
+            border-top: 3px solid #c8a2c8;
+        }
+        
+        /* Timer styling - MORE PROMINENT */
+        #sessionTimer {
+            position: fixed;
+            top: 200px;
+            right: 30px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 16px rgba(106, 13, 173, 0.4);
+            border: 3px solid #c8a2c8;
+            z-index: 999;
+            font-weight: bold;
+            color: #6a0dad;
+            min-width: 180px;
+            text-align: center;
+        }
+        
+        #sessionTimer.warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+            animation: pulse 1s infinite;
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.6);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        
+        #timerDisplay {
+            font-size: 36px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        /* iframe container */
+        .iframe-container {
+            margin: 30px auto;
+            max-width: 800px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(106, 13, 173, 0.2);
+        }
+        
+        .iframe-container iframe {
+            width: 100%;
+            border: 2px solid #c8a2c8;
+            border-radius: 10px;
+        }
+        
+        /* Time-based promotional modal */
+        .promo-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(106, 13, 173, 0.4);
+            z-index: 10000;
+            max-width: 500px;
+            border: 3px solid #6a0dad;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -60%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+        
+        .promo-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+        
+        .promo-modal h2 {
+            color: #6a0dad;
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .promo-modal p {
+            text-align: center;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .promo-modal button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #6a0dad;
+            background: #6a0dad;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .promo-modal button:hover {
+            background: #7b2cbf;
+            border-color: #7b2cbf;
+        }
+        
+        .promo-modal .close-btn {
+            background: white;
+            color: #6a0dad;
+        }
+        
+        .promo-modal .close-btn:hover {
+            background: #f8f4fc;
+        }
+        
+        /* Sidebar promotional banners */
+        .side-ad {
+            position: fixed;
+            width: 180px;
+            padding: 20px;
+            background: linear-gradient(135deg, #6a0dad 0%, #9d5bc7 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(106, 13, 173, 0.3);
+            z-index: 998;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .side-ad.left {
+            left: 20px;
+            top: 250px;
+        }
+        
+        .side-ad.right {
+            right: 20px;
+            top: 350px;
+        }
+        
+        .side-ad h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #fff;
+        }
+        
+        .side-ad p {
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+        
+        .side-ad .cta-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: white;
+            color: #6a0dad;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .side-ad .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Bottom promotional banner */
+        .bottom-ad {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 997;
+            max-width: 600px;
+            text-align: center;
+            border: 2px solid #ffc107;
+            display: none;
+        }
+        
+        .bottom-ad h3 {
+            margin: 0 0 8px 0;
+            color: #856404;
+            font-size: 18px;
+        }
+        
+        .bottom-ad p {
+            margin: 0;
+            color: #856404;
+            font-weight: bold;
+        }
+        
+        .bottom-ad .close-ad {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #856404;
+        }
+        
+        /* Hide side ads on smaller screens */
+        @media (max-width: 1200px) {
+            .side-ad {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <header id="mainHeader">
+        <h1>
+            <img src="the-symbol-of-family-healthcare-by-stethoscope.jpg" alt="Clinic Logo" width="60" height="60" style="vertical-align: middle; border-radius: 50%; box-shadow: 0 2px 5px rgba(106, 13, 173, 0.3);"> 
+            Oasis Health Care - Patient Registration
+        </h1>
+        <div id="welcomeMessage"></div>
+        <div id="newUserCheckbox" style="display: none;">
+            <label>
+                <input type="checkbox" id="notMeCheckbox" onchange="startAsNewUser()">
+                <span id="notMeLabel"></span>
+            </label>
+        </div>
+    </header>
+
+    <!-- Session Timer - PROMINENT DISPLAY -->
+    <div id="sessionTimer">
+        <div style="font-size: 14px; margin-bottom: 5px;">⏱️ TIME REMAINING</div>
+        <div id="timerDisplay" style="font-size: 36px; font-weight: bold;">10:00</div>
+        <div style="font-size: 12px; margin-top: 5px; color: #7b2cbf;">Session Timeout</div>
+    </div>
+    
+    <!-- Time-based Promotional Modal -->
+    <div class="promo-modal-overlay" id="promoOverlay"></div>
+    <div class="promo-modal" id="promoModal">
+        <h2 id="promoTitle">🌟 Special Offer!</h2>
+        <p id="promoMessage">
+            Take advantage of our limited-time promotion!
+        </p>
+        <button onclick="handlePromoAction()">Learn More</button>
+        <button class="close-btn" onclick="closePromoModal()">Maybe Later</button>
+    </div>
+    
+    <!-- Dynamic Sidebar Ads (appear based on time) -->
+    <div class="side-ad left" id="leftAd" style="display: none;">
+        <h3>💉 Vaccination Special</h3>
+        <p>Get your flu shot today!</p>
+        <p style="font-size: 18px; font-weight: bold;">$15 OFF</p>
+        <a href="#" class="cta-btn" onclick="alert('Call (512) 555-CARE to schedule!'); return false;">Book Now</a>
+    </div>
+    
+    <div class="side-ad right" id="rightAd" style="display: none;">
+        <h3>🩺 Health Screening</h3>
+        <p>Complete annual physical</p>
+        <p style="font-size: 18px; font-weight: bold;">20% OFF</p>
+        <a href="#" class="cta-btn" onclick="alert('Schedule your screening today!'); return false;">Schedule</a>
+    </div>
+    
+    <!-- Bottom Promotional Banner (time-based) -->
+    <div class="bottom-ad" id="bottomAd">
+        <button class="close-ad" onclick="document.getElementById('bottomAd').style.display='none'">&times;</button>
+        <h3 id="bottomAdTitle">⚡ Flash Sale Alert!</h3>
+        <p id="bottomAdMessage">Limited time offer - act now!</p>
+    </div>
+    
+    <!-- Current Date/Time Display - PROMINENT AT TOP -->
+    <div style="text-align: center; margin: 20px auto; padding: 20px; background: linear-gradient(135deg, #6a0dad 0%, #9d5bc7 100%); border-radius: 15px; max-width: 900px; box-shadow: 0 6px 12px rgba(106, 13, 173, 0.4);">
+        <div style="color: white; font-size: 24px; font-weight: bold; letter-spacing: 1px;">
+            <span id="currentDateTime">Loading current date and time...</span>
+        </div>
+    </div>
+
+    <!-- Inline Health Tips (replaces iframe to avoid 404) -->
+    <div class="iframe-container" style="margin: 30px auto; max-width: 800px; padding: 25px; background: linear-gradient(135deg, #f8f4fc 0%, #e8dff5 100%); border-radius: 10px; box-shadow: 0 4px 8px rgba(106, 13, 173, 0.2); border: 2px solid #c8a2c8;">
+        <h2 style="text-align: center; color: #6a0dad; margin-bottom: 20px;">📋 Health & Wellness Information</h2>
+        
+        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border: 2px solid #ffc107; margin-bottom: 20px;">
+            <h3 style="color: #856404; margin: 0 0 10px 0;">⚠️ Emergency Services</h3>
+            <p style="color: #856404; margin: 5px 0; font-weight: bold;">For Medical Emergencies: Call 911</p>
+            <p style="color: #856404; margin: 5px 0;">24/7 Nurse Hotline: 1-800-OASIS-24</p>
+        </div>
+        
+        <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #7b2cbf;">
+            <h3 style="color: #7b2cbf; margin: 0 0 8px 0;">💧 Stay Hydrated</h3>
+            <p style="margin: 0; color: #333;">Drink at least 8 glasses of water daily to maintain optimal health and body function.</p>
+        </div>
+        
+        <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #7b2cbf;">
+            <h3 style="color: #7b2cbf; margin: 0 0 8px 0;">🏃 Regular Exercise</h3>
+            <p style="margin: 0; color: #333;">Aim for 150 minutes of moderate activity per week to improve cardiovascular health.</p>
+        </div>
+        
+        <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #7b2cbf;">
+            <h3 style="color: #7b2cbf; margin: 0 0 8px 0;">😴 Quality Sleep</h3>
+            <p style="margin: 0; color: #333;">Get 7-9 hours of quality sleep each night for better mental and physical health.</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="https://www.cdc.gov/healthyweight/index.html" target="_blank" style="color: #6a0dad; font-weight: bold; text-decoration: none; padding: 10px 20px; background: white; border: 2px solid #6a0dad; border-radius: 5px; display: inline-block;">
+                🔗 CDC Health Resources →
+            </a>
+        </div>
+    </div>
+
+    <!-- Dynamic Rotating Health Tip Banner -->
+    <div id="rotatingTip" style="margin: 30px auto; max-width: 800px; padding: 20px; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 10px; border-left: 5px solid #4caf50; box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);">
+        <h3 style="color: #2e7d32; margin: 0 0 10px 0; display: flex; align-items: center; gap: 10px;">
+            <span id="tipIcon">💡</span>
+            <span>Health Tip of the Moment</span>
+        </h3>
+        <p id="rotatingTipText" style="margin: 0; color: #1b5e20; font-size: 16px; line-height: 1.6;">
+            Loading health tip...
+        </p>
+    </div>
+
+    <!-- Dynamic Appointment Reminder Banner -->
+    <div id="appointmentReminder" style="display: none; margin: 20px auto; max-width: 800px; padding: 20px; background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-radius: 10px; border-left: 5px solid #ff9800; box-shadow: 0 4px 8px rgba(255, 152, 0, 0.2);">
+        <h3 style="color: #e65100; margin: 0 0 10px 0;">📅 Don't Forget to Schedule!</h3>
+        <p style="margin: 0; color: #bf360c; font-size: 15px;">
+            Regular check-ups are important for your health. Schedule your annual physical today!
+        </p>
+        <button onclick="alert('Call (512) 555-CARE to schedule your appointment!')" style="margin-top: 10px; padding: 10px 20px; background: #ff9800; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            Schedule Now
+        </button>
+    </div>
+
+    <form id="patient-form" method="post" onsubmit="return false;">
+        
+        <!-- Block 1: Personal Information -->
+        <h2>Personal Information</h2>
+        
+        <table cellpadding="5" cellspacing="0">
+            <tr>
+                <td class="required">First Name:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="firstName" 
+                           name="firstName" 
+                           title="Enter your first name (1-30 characters, letters, apostrophes, and dashes only)"
+                           pattern="[A-Za-z'\-]{1,30}"
+                           minlength="1"
+                           maxlength="30"
+                           onblur="saveToLocalStorage('firstName')"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td>Middle Initial:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="middleInitial" 
+                           name="middleInitial" 
+                           title="Enter your middle initial (optional, one letter only)"
+                           pattern="[A-Za-z]?"
+                           maxlength="1"
+                           onblur="saveToLocalStorage('middleInitial')">
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Last Name:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="lastName" 
+                           name="lastName" 
+                           title="Enter your last name (1-30 characters, letters, apostrophes, dashes, and numbers 2-5 like Jr. or III)"
+                           pattern="[A-Za-z'2-5\-]{1,30}"
+                           minlength="1"
+                           maxlength="30"
+                           onblur="saveToLocalStorage('lastName')"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Date of Birth:</td>
+                <td colspan="3">
+                    <input type="date" 
+                           id="dob" 
+                           name="dob" 
+                           title="Select your date of birth (must be between 120 years ago and today)"
+                           onblur="saveToLocalStorage('dob')"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Social Security:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="ssnDisplay" 
+                           style="width: 100%; font-family: monospace; letter-spacing: 1px;"
+                           placeholder="***-**-****"
+                           title="Enter your Social Security Number (numbers will be hidden, dashes visible)"
+                           required>
+                    <input type="hidden" 
+                           id="ssn" 
+                           name="ssn">
+                    <small style="color: #999;">⚠️ Secure field - not saved to local storage</small>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">User ID:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="userId" 
+                           name="userId" 
+                           title="Create a username (5-30 characters, letters and numbers only, no spaces, must start with a letter)"
+                           pattern="[A-Za-z][A-Za-z0-9_-]{4,29}"
+                           minlength="5"
+                           maxlength="30"
+                           onblur="saveToLocalStorage('userId')"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Password:</td>
+                <td colspan="3">
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           title="Create a password (8-30 characters, must contain: 1 uppercase, 1 lowercase, 1 number, 1 special character !@#$%^&*()-_+=\/<>.,`~)"
+                           pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_+=\\\/<>.,`~])[A-Za-z\d!@#$%^&*()\-_+=\\\/<>.,`~]{8,30}$"
+                           minlength="8"
+                           maxlength="30"
+                           required>
+                    <small style="color: #999;">⚠️ Secure field - not saved to local storage</small>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Re-enter Password:</td>
+                <td colspan="3">
+                    <input type="password" 
+                           id="confirmPassword" 
+                           name="confirmPassword" 
+                           title="Re-enter your password to confirm (must match the password above)"
+                           minlength="8"
+                           maxlength="30"
+                           required>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Block 2: Contact & Address Information -->
+        <h2>Contact & Address Information</h2>
+        
+        <table cellpadding="5" cellspacing="0">
+            <tr>
+                <td class="required">Email Address:</td>
+                <td colspan="3">
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           title="Enter your email address in format: name@domain.com"
+                           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                           placeholder="name@domain.com"
+                           onblur="saveToLocalStorage('email')"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Phone Number:</td>
+                <td colspan="3">
+                    <input type="tel" 
+                           id="phone" 
+                           name="phone" 
+                           title="Enter your phone number in format: 000-000-0000"
+                           pattern="\d{3}-\d{3}-\d{4}"
+                           placeholder="000-000-0000"
+                           onblur="saveToLocalStorage('phone')"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Address Line 1:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="address1" 
+                           name="address1" 
+                           title="Enter your street address (2-30 characters required)"
+                           minlength="2"
+                           maxlength="30"
+                           onblur="saveToLocalStorage('address1')"
+                           required>
+                </td>
+            </tr>
+            <tr>
+                <td>Address Line 2:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="address2" 
+                           name="address2" 
+                           title="Enter apartment, suite, or unit number (optional, 2-30 characters if entered)"
+                           minlength="2"
+                           maxlength="30"
+                           pattern=".{2,30}|^$"
+                           onblur="saveToLocalStorage('address2')">
+                </td>
+            </tr>
+            <tr>
+                <td class="required">City:</td>
+                <td>
+                    <input type="text" 
+                           id="city" 
+                           name="city" 
+                           title="Enter your city name (2-30 characters, letters and spaces only)"
+                           pattern="[A-Za-z ]{2,30}"
+                           minlength="2"
+                           maxlength="30"
+                           onblur="saveToLocalStorage('city')"
+                           required>
+                </td>
+                <td class="required">State:</td>
+                <td>
+                    <select id="state" 
+                            name="state" 
+                            title="Select your state from the dropdown list"
+                            onchange="saveToLocalStorage('state')"
+                            required>
+                        <option value="">Select State</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">ZIP Code:</td>
+                <td colspan="3">
+                    <input type="text" 
+                           id="zipCode" 
+                           name="zipCode" 
+                           title="Enter your ZIP code (5 digits required, optional +4 extension supported)"
+                           pattern="\d{5}(-\d{4})?"
+                           placeholder="00000 or 00000-0000"
+                           maxlength="10"
+                           onblur="saveToLocalStorage('zipCode')"
+                           required>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Block 3: Medical History & Health Details -->
+        <h2>Medical History & Health Details</h2>
+        
+        <table cellpadding="5" cellspacing="0">
+            <tr>
+                <td colspan="4">Describe Symptoms:</td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <textarea id="symptoms" 
+                              name="symptoms" 
+                              rows="4" 
+                              title="Describe your current symptoms (optional, avoid using quotation marks)"
+                              pattern='[^"]*'
+                              onblur="saveToLocalStorage('symptoms')"
+                              placeholder="Describe current symptoms here..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" class="required" style="font-weight: bold; color: #7b2cbf; padding-top: 15px;">
+                    Check all conditions you have experienced:
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" id="conditionsCheckboxes">
+                    <!-- Conditions will be loaded dynamically via Fetch API -->
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Gender:</td>
+                <td colspan="3">
+                    <input type="radio" id="genderMale" name="gender" value="Male" title="Select if you are male" onchange="saveToLocalStorage('gender')" required>
+                    <label for="genderMale">Male</label>
+                    
+                    <input type="radio" id="genderFemale" name="gender" value="Female" title="Select if you are female" onchange="saveToLocalStorage('gender')">
+                    <label for="genderFemale">Female</label>
+                    
+                    <input type="radio" id="genderOther" name="gender" value="Other" title="Select if you identify as other" onchange="saveToLocalStorage('gender')">
+                    <label for="genderOther">Other</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Vaccinated?</td>
+                <td colspan="3">
+                    <input type="radio" id="vaccinatedYes" name="vaccinated" value="Yes" title="Select if you are vaccinated" onchange="saveToLocalStorage('vaccinated')" required>
+                    <label for="vaccinatedYes">Yes</label>
+                    
+                    <input type="radio" id="vaccinatedNo" name="vaccinated" value="No" title="Select if you are not vaccinated" onchange="saveToLocalStorage('vaccinated')">
+                    <label for="vaccinatedNo">No</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Insurance?</td>
+                <td colspan="3">
+                    <input type="radio" id="insuranceYes" name="insurance" value="Yes" title="Select if you have insurance" onchange="saveToLocalStorage('insurance')" required>
+                    <label for="insuranceYes">Yes</label>
+                    
+                    <input type="radio" id="insuranceNo" name="insurance" value="No" title="Select if you do not have insurance" onchange="saveToLocalStorage('insurance')">
+                    <label for="insuranceNo">No</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Health Score (1 to 10):</td>
+                <td colspan="3">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="range" 
+                               id="healthScore" 
+                               name="healthScore" 
+                               min="1" 
+                               max="10" 
+                               value="5"
+                               title="Slide to rate your health from 1 (poor) to 10 (excellent)"
+                               style="flex: 1; cursor: pointer; accent-color: #6a0dad;"
+                               oninput="updateHealthScore()"
+                               onchange="saveToLocalStorage('healthScore')"
+                               required>
+                        <div style="display: flex; align-items: baseline; gap: 5px; min-width: 80px;">
+                            <span id="healthScoreValue" style="font-size: 28px; font-weight: bold; color: #6a0dad;">5</span>
+                            <span style="font-size: 16px; color: #7b2cbf; font-weight: bold;">/ 10</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="padding-top: 20px; padding-bottom: 10px;">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="rememberMe" checked onchange="handleRememberMe()" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="color: #2563eb; font-weight: bold; font-size: 16px;">Remember me for future visits</span>
+                    </label>
+                    <p style="margin: 5px 0 0 26px; font-style: italic; color: #6b7280; font-size: 14px;">
+                        If checked, your information will be saved for convenience (expires in 48 hours for security)
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+        <center>
+            <button type="button" id="reviewBtn" onclick="reviewForm()">REVIEW</button>
+            <button type="button" id="submitBtn" onclick="submitForm()">SUBMIT</button>
+            <button type="reset" onclick="clearReview(); clearAllData();">START OVER</button>
+        </center>
+    </form>
+
+    <!-- Review Section (Initially Hidden) -->
+    <div id="reviewSection" style="display: none;">
+        <h2 style="text-align: center; margin-top: 30px; color: #6a0dad;">PLEASE REVIEW THIS INFORMATION</h2>
+        <div id="reviewContent" style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(106, 13, 173, 0.2); margin-top: 20px;">
+        </div>
+    </div>
+
+    <hr style="margin-bottom: 20px;">
+
+    <!-- Fixed Footer -->
+    <footer>
+        <center>
+            <p>Oasis Health Care | <a href="/cdn-cgi/l/email-protection#c8aba7a6bca9abbc88a7a9bba1bba0ada9a4bca0aba9baade6aba7a5" style="color: #6a0dad;">Contact Us</a> | 801 Wells Branch Pkwy, Pflugerville, TX 7
