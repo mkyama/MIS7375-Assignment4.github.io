@@ -2,85 +2,32 @@
 // Enhanced with: Fetch API, Cookies, Local Storage, Session Timer
 
 // ============================================================================
-// COOKIE MANAGEMENT (with localStorage fallback for file:// protocol)
+// COOKIE MANAGEMENT
 // ============================================================================
 
-// Set cookie with localStorage fallback
+// Set cookie with 48-hour expiration
 function setCookie(name, value, hours = 48) {
     const d = new Date();
     d.setTime(d.getTime() + (hours * 60 * 60 * 1000));
     const expires = "expires=" + d.toUTCString();
-    const expiryTime = d.getTime();
-    
-    // Try to set actual cookie
-    document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
-    console.log("✅ Cookie set: " + name + "=" + value + " (expires in " + hours + " hours)");
-    
-    // Also save to localStorage as fallback (for file:// protocol)
-    try {
-        localStorage.setItem(name + "_cookie", value);
-        localStorage.setItem(name + "_cookie_expiry", expiryTime);
-        console.log("✅ Also saved to localStorage as cookie fallback");
-    } catch (e) {
-        console.error("❌ Could not save to localStorage:", e);
-    }
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
 }
 
-// Get cookie with localStorage fallback
+// Get cookie by name
 function getCookie(name) {
     const nameEQ = name + "=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    console.log("🔍 Checking for cookie:", name);
-    
-    // First try to get from actual cookie
-    const ca = decodedCookie.split(';');
+    const ca = document.cookie.split(';');
     for (let i = 0; i < ca.length; i++) {
-        let c = ca[i].trim();
-        if (c.indexOf(nameEQ) === 0) {
-            const value = c.substring(nameEQ.length, c.length);
-            console.log("✅ Found cookie:", value);
-            return value;
-        }
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
     }
-    
-    // If no cookie found, try localStorage fallback (for file:// protocol)
-    try {
-        const storedValue = localStorage.getItem(name + "_cookie");
-        const storedExpiry = localStorage.getItem(name + "_cookie_expiry");
-        
-        if (storedValue && storedExpiry) {
-            const now = new Date().getTime();
-            if (now < parseInt(storedExpiry)) {
-                console.log("✅ Found in localStorage (cookie fallback):", storedValue);
-                return storedValue;
-            } else {
-                console.log("⚠️ localStorage cookie expired");
-                localStorage.removeItem(name + "_cookie");
-                localStorage.removeItem(name + "_cookie_expiry");
-            }
-        }
-    } catch (e) {
-        console.error("❌ Could not read from localStorage:", e);
-    }
-    
-    console.log("ℹ️ No cookie found");
     return null;
 }
 
-// Delete/expire cookie and localStorage fallback
+// Delete/expire cookie
 function deleteCookie(name) {
-    // Delete actual cookie
     document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    console.log("🗑️ Cookie deleted:", name);
-    
-    // Also remove from localStorage fallback
-    try {
-        localStorage.removeItem(name + "_cookie");
-        localStorage.removeItem(name + "_cookie_expiry");
-        console.log("🗑️ Also removed from localStorage");
-    } catch (e) {
-        console.error("❌ Could not remove from localStorage:", e);
-    }
 }
 
 // ============================================================================
@@ -95,106 +42,45 @@ function saveToLocalStorage(fieldId) {
     const field = document.getElementById(fieldId);
     if (!field) return;
     
-// ============================================================================
-// AUTO-SAVE TO LOCAL STORAGE
-// ============================================================================
-
-// Setup auto-save event listeners for all fields
-function setupAutoSave() {
-    console.log('🔧 Setting up auto-save for all fields...');
+    // Don't save secure fields (SSN, passwords)
+    if (fieldId === 'ssn' || fieldId === 'ssnDisplay' || 
+        fieldId === 'password' || fieldId === 'confirmPassword') {
+        return;
+    }
     
-    // Text input fields to auto-save
-    const textFields = [
-        'firstName', 'middleInitial', 'lastName', 'dob', 'userId',
-        'email', 'phone', 'address1', 'address2', 'city', 'state', 'zipCode',
-        'symptoms', 'healthScore'
-    ];
+    let value;
+    if (field.type === 'checkbox') {
+        value = field.checked;
+    } else if (field.type === 'radio') {
+        const checked = document.querySelector(`input[name="${field.name}"]:checked`);
+        value = checked ? checked.value : '';
+    } else {
+        value = field.value;
+    }
     
-    // Add blur event listeners to text fields (saves when user leaves field)
-    textFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            // Save on blur (when user leaves the field)
-            field.addEventListener('blur', function() {
-                if (this.value) {
-                    localStorage.setItem('oasis_' + fieldId, this.value);
-                    console.log('💾 Auto-saved:', fieldId, '=', this.value);
-                }
-            });
-            
-            // Also save on change for dropdowns
-            if (field.tagName === 'SELECT') {
-                field.addEventListener('change', function() {
-                    if (this.value) {
-                        localStorage.setItem('oasis_' + fieldId, this.value);
-                        console.log('💾 Auto-saved:', fieldId, '=', this.value);
-                    }
-                });
-            }
-        }
-    });
-    
-    // Add change event listeners to radio buttons
-    ['gender', 'vaccinated', 'insurance'].forEach(name => {
-        const radios = document.querySelectorAll(`input[name="${name}"]`);
-        radios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    localStorage.setItem('oasis_' + name, this.value);
-                    console.log('💾 Auto-saved:', name, '=', this.value);
-                }
-            });
-        });
-    });
-    
-    // Add change event listeners to medical history checkboxes
-    const medicalCheckboxes = document.querySelectorAll('input[name="medicalHistory"]');
-    medicalCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            saveMedicalHistory();
-        });
-    });
-    
-    console.log('✅ Auto-save setup complete - data will save automatically as you fill the form');
+    localStorage.setItem('oasis_' + fieldId, value);
 }
 
 // Save medical history checkboxes
 function saveMedicalHistory() {
+    const rememberMe = document.getElementById('rememberMe');
+    if (!rememberMe || !rememberMe.checked) return;
+    
     const checkedConditions = Array.from(
         document.querySelectorAll('input[name="medicalHistory"]:checked')
     ).map(cb => cb.value);
     
     localStorage.setItem('oasis_medicalHistory', JSON.stringify(checkedConditions));
-    console.log('💾 Auto-saved medical history:', checkedConditions);
 }
 
 // Load data from localStorage
 function loadFromLocalStorage() {
+    const firstName = localStorage.getItem('oasis_firstName');
+    
+    // Only load if firstName matches the cookie
     const cookieFirstName = getCookie('oasisUserFirstName');
-    const storedFirstName = localStorage.getItem('oasis_firstName');
+    if (!firstName || firstName !== cookieFirstName) return;
     
-    console.log('🔍 Checking for saved data...');
-    console.log('   Cookie firstName:', cookieFirstName);
-    console.log('   Stored firstName:', storedFirstName);
-    
-    // If there's no data in localStorage, nothing to load
-    if (!storedFirstName) {
-        console.log('ℹ️ No saved data found');
-        return;
-    }
-    
-    // If cookie exists and matches, load everything
-    if (cookieFirstName && cookieFirstName === storedFirstName) {
-        console.log('✅ Cookie matches - loading all saved data');
-        loadAllFieldsFromStorage();
-    } else if (storedFirstName) {
-        // Data exists but no cookie or mismatch - still load it (user may have cleared cookies)
-        console.log('⚠️ Data exists but no cookie match - loading anyway');
-        loadAllFieldsFromStorage();
-    }
-}
-
-function loadAllFieldsFromStorage() {
     // Load all non-secure fields
     const fieldsToLoad = [
         'firstName', 'middleInitial', 'lastName', 'dob', 'userId',
@@ -202,17 +88,11 @@ function loadAllFieldsFromStorage() {
         'symptoms', 'healthScore'
     ];
     
-    let fieldsRestored = 0;
-    
     fieldsToLoad.forEach(fieldId => {
         const value = localStorage.getItem('oasis_' + fieldId);
         if (value) {
             const field = document.getElementById(fieldId);
-            if (field) {
-                field.value = value;
-                fieldsRestored++;
-                console.log('✅ Restored:', fieldId, '=', value);
-            }
+            if (field) field.value = value;
         }
     });
     
@@ -221,11 +101,7 @@ function loadAllFieldsFromStorage() {
         const value = localStorage.getItem('oasis_' + name);
         if (value) {
             const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
-            if (radio) {
-                radio.checked = true;
-                fieldsRestored++;
-                console.log('✅ Restored:', name, '=', value);
-            }
+            if (radio) radio.checked = true;
         }
     });
     
@@ -236,50 +112,36 @@ function loadAllFieldsFromStorage() {
             const conditions = JSON.parse(medicalHistory);
             conditions.forEach(condition => {
                 const checkbox = document.querySelector(`input[name="medicalHistory"][value="${condition}"]`);
-                if (checkbox) {
-                    checkbox.checked = true;
-                }
+                if (checkbox) checkbox.checked = true;
             });
-            fieldsRestored++;
-            console.log('✅ Restored medical history:', conditions);
         } catch (e) {
-            console.error('❌ Error loading medical history:', e);
+            console.error('Error loading medical history:', e);
         }
     }
     
     // Update health score display
     const healthScore = document.getElementById('healthScore');
-    if (healthScore && healthScore.value) {
-        const valueDisplay = document.getElementById('healthScoreValue');
-        if (valueDisplay) {
-            valueDisplay.textContent = healthScore.value;
-        }
+    if (healthScore) {
+        document.getElementById('healthScoreValue').textContent = healthScore.value;
     }
-    
-    console.log(`✅ Restored ${fieldsRestored} fields from localStorage`);
-    alert(`Welcome back! We've restored your form data (${fieldsRestored} fields). You can continue where you left off.`);
 }
 
 // Clear all local storage data
 function clearLocalStorage() {
     const keys = Object.keys(localStorage);
-    let cleared = 0;
     keys.forEach(key => {
         if (key.startsWith('oasis_')) {
             localStorage.removeItem(key);
-            cleared++;
         }
     });
-    console.log(`🗑️ Cleared ${cleared} items from localStorage`);
 }
 
 // Clear all data (cookie + localStorage)
 function clearAllData() {
     deleteCookie('oasisUserFirstName');
     clearLocalStorage();
-    document.getElementById('welcomeMessage').textContent = 'Welcome, New User! 🌟';
+    document.getElementById('welcomeMessage').textContent = 'Welcome, New User!';
     document.getElementById('newUserCheckbox').style.display = 'none';
-    console.log('✅ All data cleared - starting fresh');
 }
 
 // ============================================================================
@@ -328,32 +190,26 @@ function setupWelcomeMessage() {
     const newUserCheckbox = document.getElementById('newUserCheckbox');
     const notMeLabel = document.getElementById('notMeLabel');
     
-    console.log("🔧 Setting up welcome message...");
-    console.log("   Cookie firstName:", firstName);
-    
     if (firstName) {
-        // Returning user with cookie
+        // Returning user
         welcomeMsg.textContent = `Welcome back, ${firstName}! 👋`;
         welcomeMsg.style.color = '#6a0dad';
         
         // Show "Not me?" checkbox
         newUserCheckbox.style.display = 'block';
-        notMeLabel.textContent = `Not ${firstName}? Click here to start as a NEW USER.`;
+        notMeLabel.textContent = `Not ${firstName}? Click here to start as a new user.`;
         
-        console.log("✅ Returning user detected:", firstName);
+        // Pre-fill firstName field
+        document.getElementById('firstName').value = firstName;
+        
+        // Load other data from localStorage
+        loadFromLocalStorage();
     } else {
-        // New user (no cookie)
+        // New user
         welcomeMsg.textContent = 'Welcome, New User! 🌟';
         welcomeMsg.style.color = '#7b2cbf';
         newUserCheckbox.style.display = 'none';
-        
-        console.log("ℹ️ New user (no cookie found)");
     }
-    
-    // ALWAYS load from localStorage (whether cookie exists or not)
-    // This ensures data is restored even if user hasn't submitted yet
-    console.log("📂 Attempting to load data from localStorage...");
-    loadFromLocalStorage();
 }
 
 // ============================================================================
@@ -1367,10 +1223,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup welcome message and cookie handling
     setupWelcomeMessage();
-    
-    // Setup auto-save functionality (saves data as user fills form)
-    setupAutoSave();
-    console.log('✅ Auto-save enabled - form data will save automatically');
     
     // Setup formatting
     setupPhoneFormatting();
